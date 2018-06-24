@@ -1,0 +1,129 @@
+use Libraries.Game.Game
+use Libraries.Game.Graphics.Drawable
+use Libraries.Sound.Audio
+use Libraries.Game.Graphics.Color
+use Libraries.Interface.Events.KeyboardEvent
+use Libraries.Interface.Events.KeyboardListener
+use Libraries.Game.Graphics.Label
+use Libraries.Game.Graphics.Font
+use Libraries.Sound.Speech
+
+class Main is Game, KeyboardListener
+    // Instatiating the Drawable objects
+    Drawable upButton
+    Drawable pressedUB
+    Drawable downButton
+    Drawable pressedDB
+
+    // Instantiating the Audio objects
+    Audio upSound
+    Audio downSound
+
+    // Instatiating the Color objects
+    Color color
+    Color red = color:Red()
+    Color blue = color:Blue()
+    Color yellow = color:Yellow()
+    Color green = color:Green()
+    Color orange = color:Orange()
+    Color navy = color:Navy()
+    Color black = color:Black()
+
+    // Instantiating a Font object
+    Font font1
+
+    // Instantiating a Lable object
+    Label label1
+
+    //Instatiating a Speech object
+    Speech speech
+
+    // Declaring an iteger variable that is used as a counter
+    integer counter = 0
+
+    // Declaring a text varibale that stores casted value from the integer varibale 'caounter'
+    text castedCounter = " "
+
+    action Main
+        StartGame()
+    end
+
+    action CreateGame
+        //Loading and addinng the images to the screen
+        LoadColoredTriangle(upButton, 300, 400, 500, 400, 400, 600, red)
+        LoadColoredTriangle(pressedUB, 300, 400, 500, 400, 400, 600, black)
+        LoadColoredTriangle(downButton, 300, 200, 500, 200, 400, 0, blue)
+        LoadColoredTriangle(pressedDB, 300, 200, 500, 200, 400, 0, black)
+        
+        // Hiding the pressed button when no key is pressed
+        pressedUB:Hide()
+        pressedDB:Hide()
+
+        //Setting the atributes fo the Font object
+        font1:LoadFont("Arial")
+        font1:SetSize(72)
+        font1:SetColor(navy)
+        
+        // Type casting the integer variable 'counter' into text varibale 'castedCounter'
+        castedCounter = cast(text, counter)
+
+        // Setting the attributes to the Label object and adding it to the screen
+        label1:SetFont(font1)
+        label1:SetPosition(350, 300)
+        label1:SetText(castedCounter)
+        label1:SetDescription(castedCounter)
+        Add(label1)
+
+        // Loading the Audio files to the Audio objects to be played later
+        upSound:Load("media/code/Bing.ogg")
+        downSound:Load("media/code/Boing.ogg")
+
+        AddKeyboardListener(me)
+    end
+
+    action Update(number seconds)
+        //Updating csated counter in the label object
+        castedCounter = cast(text, counter)
+        label1:SetText(castedCounter)
+        label1:SetDescription(castedCounter)
+        Add(label1)
+    end
+
+    action PressedKey(KeyboardEvent event)
+        if event:keyCode = event:UP
+            upButton:Hide()
+            pressedUB:Show()
+            upSound:Play()
+            counter = counter + 1
+            
+        elseif event:keyCode = event:DOWN
+            downButton:Hide()
+            pressedDB:Show()
+            downSound:Play()
+            counter = counter - 1
+
+        elseif event:keyCode = event:SPACE
+            speech:Say(label1:GetDescription())
+
+        elseif event:keyCode = event:ESCAPE
+            Exit()
+
+        end
+    end
+
+    action ReleasedKey(KeyboardEvent event)
+        if event:keyCode = event:UP
+            pressedUB:Hide()
+            upButton:Show()
+        elseif event:keyCode = event:DOWN
+            pressedDB:Hide()
+            downButton:Show()
+        end
+    end   
+
+// Creating Actions to manage the complexity
+    action LoadColoredTriangle(Drawable dObject, integer leftBottomX, integer leftBottomY, integer rightBottomX, integer rightBottomY, integer topX, integer topY, Color color )
+        dObject:LoadFilledTriangle(leftBottomX, leftBottomY, rightBottomX, rightBottomY, topX, topY, color)
+        Add(dObject)
+    end
+end
